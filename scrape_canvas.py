@@ -24,7 +24,6 @@ DATA_DIR = "data"
 
 FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
 
-# Optional Firecrawl enhancement
 firecrawl_app = None
 
 if FIRECRAWL_API_KEY:
@@ -50,9 +49,6 @@ SKIP_LIST = [
 # =========================================================
 
 def sanitize_name(name):
-    """
-    Remove invalid filename characters.
-    """
 
     return re.sub(
         r'[<>:"/\\|?*]',
@@ -62,9 +58,6 @@ def sanitize_name(name):
 
 
 def ensure_absolute_url(url):
-    """
-    Convert relative URLs to absolute URLs.
-    """
 
     if not url:
         return url
@@ -75,19 +68,39 @@ def ensure_absolute_url(url):
     return f"{BASE_URL}{url}"
 
 
+def file_exists(folder_path, filename, index):
+
+    clean_filename = sanitize_name(
+        filename
+    )
+
+    numbered_filename = (
+        f"{index:02d}_{clean_filename}.md"
+    )
+
+    filepath = os.path.join(
+        folder_path,
+        numbered_filename
+    )
+
+    return os.path.exists(filepath)
+
+
 async def save_markdown(
     content,
     folder_path,
     filename,
     order_index
 ):
-    """
-    Save markdown file preserving scrape order.
-    """
 
-    os.makedirs(folder_path, exist_ok=True)
+    os.makedirs(
+        folder_path,
+        exist_ok=True
+    )
 
-    clean_filename = sanitize_name(filename)
+    clean_filename = sanitize_name(
+        filename
+    )
 
     numbered_filename = (
         f"{order_index:02d}_{clean_filename}.md"
@@ -114,10 +127,6 @@ async def save_markdown(
 # =========================================================
 
 def preserve_media_inline(soup):
-    """
-    Replace media elements with markdown-compatible
-    inline placeholders BEFORE markdown conversion.
-    """
 
     # -----------------------------------------------------
     # IMAGES
@@ -141,7 +150,7 @@ def preserve_media_inline(soup):
         img.replace_with(markdown_img)
 
     # -----------------------------------------------------
-    # IFRAMES (YouTube/Vimeo/Canvas Studio)
+    # IFRAMES
     # -----------------------------------------------------
 
     for iframe in soup.find_all("iframe"):
@@ -153,11 +162,13 @@ def preserve_media_inline(soup):
 
         src = ensure_absolute_url(src)
 
-        video_text = (
+        iframe_text = (
             f"\n\n[VIDEO LINK]({src})\n\n"
         )
 
-        iframe.replace_with(video_text)
+        iframe.replace_with(
+            iframe_text
+        )
 
     # -----------------------------------------------------
     # HTML5 VIDEOS
@@ -167,10 +178,11 @@ def preserve_media_inline(soup):
 
         src = video.get("src")
 
-        # fallback to source tag
         if not src:
 
-            source = video.find("source")
+            source = video.find(
+                "source"
+            )
 
             if source:
                 src = source.get("src")
@@ -184,13 +196,15 @@ def preserve_media_inline(soup):
             f"\n\n[VIDEO LINK]({src})\n\n"
         )
 
-        video.replace_with(video_text)
+        video.replace_with(
+            video_text
+        )
 
     return soup
 
 
 # =========================================================
-# ATTACHMENT EXTRACTION
+# ATTACHMENTS
 # =========================================================
 
 def extract_attachments(soup):
@@ -209,7 +223,10 @@ def extract_attachments(soup):
         ".txt"
     ]
 
-    for a in soup.find_all("a", href=True):
+    for a in soup.find_all(
+        "a",
+        href=True
+    ):
 
         href = a["href"]
 
@@ -219,23 +236,23 @@ def extract_attachments(soup):
         ):
 
             attachments.append({
-                "name": a.get_text(strip=True),
-                "url": ensure_absolute_url(href)
+                "name": a.get_text(
+                    strip=True
+                ),
+                "url": ensure_absolute_url(
+                    href
+                )
             })
 
     return attachments
 
 
 # =========================================================
-# CLEAN CANVAS HTML
+# CLEAN HTML
 # =========================================================
 
 def clean_canvas_html(soup):
-    """
-    Remove Canvas UI junk.
-    """
 
-    # Remove scripts/styles
     for tag in soup([
         "script",
         "style",
@@ -243,7 +260,6 @@ def clean_canvas_html(soup):
     ]):
         tag.decompose()
 
-    # Remove unnecessary Canvas UI
     selectors_to_remove = [
         ".header-bar",
         ".navigation",
@@ -255,14 +271,16 @@ def clean_canvas_html(soup):
 
     for selector in selectors_to_remove:
 
-        for el in soup.select(selector):
+        for el in soup.select(
+            selector
+        ):
             el.decompose()
 
     return soup
 
 
 # =========================================================
-# MARKDOWN BUILDER
+# BUILD MARKDOWN
 # =========================================================
 
 def build_enriched_markdown(
@@ -274,7 +292,9 @@ def build_enriched_markdown(
 
     final_md = f"# {title}\n\n"
 
-    final_md += markdown_content.strip()
+    final_md += (
+        markdown_content.strip()
+    )
 
     # -----------------------------------------------------
     # ATTACHMENTS
@@ -304,7 +324,8 @@ def build_enriched_markdown(
     )
 
     final_md += (
-        f"Original URL: {source_url}\n\n"
+        f"Original URL: "
+        f"{source_url}\n\n"
     )
 
     final_md += (
@@ -316,7 +337,7 @@ def build_enriched_markdown(
 
 
 # =========================================================
-# FIRECRAWL ENHANCEMENT
+# FIRECRAWL
 # =========================================================
 
 def try_firecrawl(url):
@@ -333,23 +354,31 @@ def try_firecrawl(url):
             }
         )
 
-        # Object response
-        if hasattr(result, "markdown"):
+        if hasattr(
+            result,
+            "markdown"
+        ):
             return result.markdown
 
-        # Dictionary response
-        if isinstance(result, dict):
-            return result.get("markdown")
+        if isinstance(
+            result,
+            dict
+        ):
+            return result.get(
+                "markdown"
+            )
 
     except Exception as e:
 
-        print(f"⚠️ Firecrawl failed: {e}")
+        print(
+            f"⚠️ Firecrawl failed: {e}"
+        )
 
     return None
 
 
 # =========================================================
-# SCRAPE SINGLE PAGE
+# SCRAPE PAGE
 # =========================================================
 
 async def scrape_page(
@@ -360,9 +389,31 @@ async def scrape_page(
     item_index
 ):
 
-    full_url = ensure_absolute_url(page_url)
+    # -----------------------------------------------------
+    # RESUME SUPPORT
+    # -----------------------------------------------------
 
-    print(f"\n🔍 Scraping: {page_title}")
+    if file_exists(
+        folder_path,
+        page_title,
+        item_index
+    ):
+
+        print(
+            f"⏩ Already exists: "
+            f"{page_title}"
+        )
+
+        return
+
+    full_url = ensure_absolute_url(
+        page_url
+    )
+
+    print(
+        f"\n🔍 Scraping: "
+        f"{page_title}"
+    )
 
     page = await context.new_page()
 
@@ -374,10 +425,31 @@ async def scrape_page(
             timeout=60000
         )
 
-        await page.wait_for_timeout(3000)
+        # Wait for the main content selector to appear
+        # instead of a fixed sleep
+        for selector in [
+            ".show-content",
+            ".user_content",
+            ".page-content",
+            "#wiki_page_show",
+            "main"
+        ]:
+            try:
+                await page.wait_for_selector(
+                    selector,
+                    timeout=5000
+                )
+                break
+            except:
+                pass
+
+        print(
+            f"✅ Loaded: "
+            f"{page_title}"
+        )
 
         # -------------------------------------------------
-        # CONTENT SELECTORS
+        # MAIN CONTENT SELECTORS
         # -------------------------------------------------
 
         main_selectors = [
@@ -413,7 +485,9 @@ async def scrape_page(
         # fallback
         if not html:
 
-            html = await page.inner_html("body")
+            html = await page.inner_html(
+                "body"
+            )
 
         # -------------------------------------------------
         # PARSE HTML
@@ -425,15 +499,17 @@ async def scrape_page(
         )
 
         # -------------------------------------------------
-        # EXTRACT ATTACHMENTS
+        # ATTACHMENTS
         # -------------------------------------------------
 
-        attachments = extract_attachments(
-            soup
+        attachments = (
+            extract_attachments(
+                soup
+            )
         )
 
         # -------------------------------------------------
-        # PRESERVE MEDIA INLINE
+        # INLINE MEDIA
         # -------------------------------------------------
 
         soup = preserve_media_inline(
@@ -449,7 +525,7 @@ async def scrape_page(
         )
 
         # -------------------------------------------------
-        # CONVERT TO MARKDOWN
+        # HTML -> MARKDOWN
         # -------------------------------------------------
 
         markdown_content = md(
@@ -458,11 +534,13 @@ async def scrape_page(
         )
 
         # -------------------------------------------------
-        # OPTIONAL FIRECRAWL ENHANCEMENT
+        # OPTIONAL FIRECRAWL
         # -------------------------------------------------
 
-        firecrawl_md = try_firecrawl(
-            full_url
+        firecrawl_md = (
+            try_firecrawl(
+                full_url
+            )
         )
 
         if (
@@ -471,7 +549,9 @@ async def scrape_page(
             > len(markdown_content)
         ):
 
-            markdown_content = firecrawl_md
+            markdown_content = (
+                firecrawl_md
+            )
 
         # -------------------------------------------------
         # BUILD FINAL MARKDOWN
@@ -487,7 +567,7 @@ async def scrape_page(
         )
 
         # -------------------------------------------------
-        # SAVE FILE
+        # SAVE FILE — folders created here, not before
         # -------------------------------------------------
 
         await save_markdown(
@@ -510,7 +590,7 @@ async def scrape_page(
 
 
 # =========================================================
-# MAIN COURSE SCRAPER
+# MAIN SCRAPER
 # =========================================================
 
 async def scrape_course():
@@ -525,7 +605,9 @@ async def scrape_course():
         # AUTH CHECK
         # -------------------------------------------------
 
-        if not os.path.exists("auth.json"):
+        if not os.path.exists(
+            "auth.json"
+        ):
 
             print(
                 "\n❌ auth.json missing."
@@ -538,7 +620,7 @@ async def scrape_course():
             return
 
         # -------------------------------------------------
-        # LOAD SAVED SESSION
+        # LOAD SESSION
         # -------------------------------------------------
 
         context = await browser.new_context(
@@ -552,21 +634,78 @@ async def scrape_course():
             f"{COURSE_ID}/modules"
         )
 
-        print("\n🚀 Opening modules page")
+        print(
+            "\n🚀 Opening modules page"
+        )
 
+        print(modules_url)
+
+        # networkidle waits for Canvas JS to finish
+        # rendering all modules before we touch the DOM
         await page.goto(
             modules_url,
             wait_until="networkidle",
-            timeout=60000
+            timeout=90000
+        )
+
+        print("✅ Modules page loaded")
+
+        print(
+            f"📄 Page Title: "
+            f"{await page.title()}"
         )
 
         # -------------------------------------------------
-        # WAIT FOR MODULES
+        # CHECK IF LOGIN EXPIRED
         # -------------------------------------------------
+
+        current_url = page.url
+
+        if "login" in current_url.lower():
+
+            print(
+                "\n❌ Session expired."
+            )
+
+            print(
+                "Recreate auth.json"
+            )
+
+            return
+
+        # -------------------------------------------------
+        # WAIT FOR AT LEAST ONE MODULE IN THE DOM
+        # -------------------------------------------------
+
+        print(
+            "⏳ Waiting for modules to render..."
+        )
 
         await page.wait_for_selector(
             ".context_module",
             timeout=60000
+        )
+
+        print(
+            "✅ Modules detected"
+        )
+
+        # -------------------------------------------------
+        # EXPAND ALL COLLAPSED MODULES AT ONCE
+        # Single JS call — avoids slow sequential awaits
+        # -------------------------------------------------
+
+        await page.evaluate(
+            """
+            document
+                .querySelectorAll('.expand_module_link')
+                .forEach(btn => btn.click());
+            """
+        )
+
+        # Wait for expansion network requests to settle
+        await page.wait_for_load_state(
+            "networkidle"
         )
 
         modules = await page.query_selector_all(
@@ -578,9 +717,9 @@ async def scrape_course():
             f"{len(modules)} modules"
         )
 
-        # -------------------------------------------------
+        # =================================================
         # LOOP MODULES
-        # -------------------------------------------------
+        # =================================================
 
         for module_index, module in enumerate(
             modules,
@@ -623,7 +762,12 @@ async def scrape_course():
                 "====================="
             )
 
-            folder_path = os.path.join(
+            # Module folder is NOT created here.
+            # It will be created lazily inside
+            # save_markdown only when a file is
+            # actually written.
+
+            module_folder = os.path.join(
                 DATA_DIR,
                 numbered_module_title
             )
@@ -636,16 +780,72 @@ async def scrape_course():
                 f"Found {len(rows)} items"
             )
 
-            # -------------------------------------------------
-            # LOOP ITEMS
-            # -------------------------------------------------
+            # =================================================
+            # SECTION TRACKING
+            # =================================================
 
-            for item_index, row in enumerate(
-                rows,
-                start=1
-            ):
+            current_section = None
+
+            section_index = 1
+
+            item_index = 1
+
+            # =================================================
+            # LOOP ROWS
+            # =================================================
+
+            for row in rows:
 
                 try:
+
+                    # -----------------------------------------
+                    # ROW CLASS
+                    # -----------------------------------------
+
+                    row_class = (
+                        await row.get_attribute(
+                            "class"
+                        )
+                    ) or ""
+
+                    # =================================================
+                    # SECTION HEADER DETECTION
+                    # =================================================
+
+                    if (
+                        "context_module_sub_header"
+                        in row_class
+                    ):
+
+                        section_title_el = await row.query_selector(
+                            "span.title"
+                        )
+
+                        if section_title_el:
+
+                            section_title = (
+                                await section_title_el.inner_text()
+                            ).strip()
+
+                            if section_title:
+
+                                current_section = (
+                                    f"{section_index:02d}_"
+                                    f"{sanitize_name(section_title)}"
+                                )
+
+                                section_index += 1
+
+                                print(
+                                    f"\n📁 SECTION: "
+                                    f"{current_section}"
+                                )
+
+                        continue
+
+                    # =================================================
+                    # NORMAL CONTENT ITEM
+                    # =================================================
 
                     link_el = await row.query_selector(
                         "a.ig-title"
@@ -654,9 +854,17 @@ async def scrape_course():
                     if not link_el:
                         continue
 
+                    # -----------------------------------------
+                    # PAGE TITLE
+                    # -----------------------------------------
+
                     page_title = (
                         await link_el.inner_text()
                     ).strip()
+
+                    # -----------------------------------------
+                    # PAGE URL
+                    # -----------------------------------------
 
                     page_url = (
                         await link_el.get_attribute(
@@ -667,9 +875,9 @@ async def scrape_course():
                     if not page_url:
                         continue
 
-                    # -----------------------------------------
-                    # SKIP FILTERS
-                    # -----------------------------------------
+                    # =================================================
+                    # SKIP LIST
+                    # =================================================
 
                     if any(
                         skip.lower()
@@ -684,7 +892,10 @@ async def scrape_course():
 
                         continue
 
-                    # skip quizzes/tools
+                    # =================================================
+                    # SKIP QUIZZES / TOOLS
+                    # =================================================
+
                     if (
                         "quiz" in page_url.lower()
                         or "external_tools"
@@ -692,26 +903,42 @@ async def scrape_course():
                     ):
 
                         print(
-                            f"⏩ Skipping "
-                            f"tool/quiz: "
+                            f"⏩ Skipping tool/quiz: "
                             f"{page_title}"
                         )
 
                         continue
 
-                    # -----------------------------------------
+                    # =================================================
+                    # RESOLVE TARGET FOLDER
+                    # Items before the first sub-header go directly
+                    # into the module folder (no subfolder).
+                    # =================================================
+
+                    if current_section:
+                        section_folder = os.path.join(
+                            module_folder,
+                            current_section
+                        )
+                    else:
+                        # No sub-header yet — save at module root
+                        section_folder = module_folder
+
+                    # =================================================
                     # SCRAPE PAGE
-                    # -----------------------------------------
+                    # =================================================
 
                     await scrape_page(
                         context=context,
                         page_title=page_title,
                         page_url=page_url,
-                        folder_path=folder_path,
+                        folder_path=section_folder,
                         item_index=item_index
                     )
 
-                    await asyncio.sleep(2)
+                    item_index += 1
+
+                    await asyncio.sleep(0.5)
 
                 except Exception as e:
 
@@ -741,4 +968,6 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
 
-        print("\n🛑 Scraper stopped")
+        print(
+            "\n🛑 Scraper stopped"
+        )

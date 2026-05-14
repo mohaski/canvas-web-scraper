@@ -4,18 +4,7 @@
 
 ## ![](https://moringa.instructure.com/courses/1391/files/620241/preview) Introduction to Operators and Control Flow Statements
 
-* [Page: Current: Introduction to Operators and Control Flow Statements (1 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239144 "Page: Current: Introduction to Operators and Control Flow Statements (1 of 12)")
-* [Page: Introduction to Operators (2 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239147 "Page: Introduction to Operators (2 of 12)")
-* [Page: What are Operators? (3 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239149 "Page: What are Operators? (3 of 12)")
-* [Page: Examples: Using Operators in Business (4 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239150 "Page: Examples: Using Operators in Business (4 of 12)")
-* [Page: Process: Python Operators (5 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239151 "Page: Process: Python Operators (5 of 12)")
-* [Page: Summary: Operators (6 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239152 "Page: Summary: Operators (6 of 12)")
-* [Page: Check for Understanding: Operators (7 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239153 "Page: Check for Understanding: Operators (7 of 12)")
-* [Page: Technical Lesson: Operators (8 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239154 "Page: Technical Lesson: Operators (8 of 12)")
-* [Page: Practice: Rock-Paper-Scissors Game (9 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239155 "Page: Practice: Rock-Paper-Scissors Game (9 of 12)")
-* [Discussion: Operators (10 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239159 "Discussion: Operators  (10 of 12)")
-* [Lab: Coding with Operators and Control Flow Statements (11 of 12), Assignment](https://moringa.instructure.com/courses/1391/modules/items/239161 "Lab: Coding with Operators and Control Flow Statements (11 of 12), Assignment")
-* [Operators and Control Flow Quiz (12 of 12)](https://moringa.instructure.com/courses/1391/modules/items/239163 "Operators and Control Flow Quiz (12 of 12)")
+Icon Progress Bar (browser only)
 
 3 min read
 
@@ -89,4 +78,4 @@ After completing this module, you should be able to:
 
 Original URL: https://moringa.instructure.com/courses/1391/modules/items/239144
 
-Scraped At: 2026-05-14T00:27:40.989133
+Scraped At: 2026-05-14T15:19:18.443912

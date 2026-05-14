@@ -4,17 +4,7 @@
 
 ## ![](https://moringa.instructure.com/courses/1391/files/620241/preview) Introduction to While Loops
 
-* [Page: Current: Introduction to While Loops (1 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239166 "Page: Current: Introduction to While Loops (1 of 11)")
-* [Page: What are While Loops? (2 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239170 "Page: What are While Loops? (2 of 11)")
-* [Page: Examples: While Loops (3 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239171 "Page: Examples: While Loops (3 of 11)")
-* [Page: Process: While Loops (4 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239173 "Page: Process: While Loops (4 of 11)")
-* [Page: Summary: While Loops (5 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239175 "Page: Summary: While Loops (5 of 11)")
-* [Page: Check for Understanding: While Loops (6 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239178 "Page: Check for Understanding: While Loops  (6 of 11)")
-* [Page: Technical Lesson: While Loops (7 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239179 "Page: Technical Lesson: While Loops (7 of 11)")
-* [Page: Practice: Savings Goal Tracker with While Loops (8 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239181 "Page: Practice: Savings Goal Tracker with While Loops (8 of 11)")
-* [Discussion: While Loops (9 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239184 "Discussion: While Loops (9 of 11)")
-* [Lab: Coding with While Loops (10 of 11), Assignment](https://moringa.instructure.com/courses/1391/modules/items/239186 "Lab: Coding with While Loops (10 of 11), Assignment")
-* [Quiz: While Loops (11 of 11)](https://moringa.instructure.com/courses/1391/modules/items/239188 "Quiz: While Loops (11 of 11)")
+Icon Progress Bar (browser only)
 
 4 min read
 
@@ -82,4 +72,4 @@ After completing this lesson, you should be able to:
 
 Original URL: https://moringa.instructure.com/courses/1391/modules/items/239166
 
-Scraped At: 2026-05-14T00:30:03.559297
+Scraped At: 2026-05-14T15:21:18.870710
