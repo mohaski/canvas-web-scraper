@@ -16,11 +16,11 @@ from firecrawl import FirecrawlApp
 load_dotenv()
 
 BASE_URL = "https://moringa.instructure.com"
-COURSE_ID = "1391"
+COURSE_ID = "1406"
 
 HEADLESS = False
 
-DATA_DIR = "data"
+DATA_DIR = "data/Module2"
 
 FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
 
