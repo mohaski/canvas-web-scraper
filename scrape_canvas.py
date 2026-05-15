@@ -3,33 +3,22 @@ import re
 import asyncio
 from datetime import datetime
 
-from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
-from firecrawl import FirecrawlApp
 
 # =========================================================
 # CONFIGURATION
 # =========================================================
 
-load_dotenv()
-
 BASE_URL = "https://moringa.instructure.com"
-COURSE_ID = "1406"
+COURSE_ID = "1426"
 
 HEADLESS = False
 
-DATA_DIR = "data/Module2"
+DATA_DIR = "data/Module3"
 
-FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
 
-firecrawl_app = None
-
-if FIRECRAWL_API_KEY:
-    firecrawl_app = FirecrawlApp(
-        api_key=FIRECRAWL_API_KEY
-    )
 
 # =========================================================
 # SKIP LIST
@@ -253,7 +242,7 @@ def extract_attachments(soup):
 
 def clean_canvas_html(soup):
 
-    for tag in soup([
+    for tag in soup.find_all([
         "script",
         "style",
         "noscript"
@@ -336,45 +325,7 @@ def build_enriched_markdown(
     return final_md
 
 
-# =========================================================
-# FIRECRAWL
-# =========================================================
 
-def try_firecrawl(url):
-
-    if not firecrawl_app:
-        return None
-
-    try:
-
-        result = firecrawl_app.scrape_url(
-            url,
-            params={
-                "formats": ["markdown"]
-            }
-        )
-
-        if hasattr(
-            result,
-            "markdown"
-        ):
-            return result.markdown
-
-        if isinstance(
-            result,
-            dict
-        ):
-            return result.get(
-                "markdown"
-            )
-
-    except Exception as e:
-
-        print(
-            f"⚠️ Firecrawl failed: {e}"
-        )
-
-    return None
 
 
 # =========================================================
@@ -533,25 +484,6 @@ async def scrape_page(
             heading_style="ATX"
         )
 
-        # -------------------------------------------------
-        # OPTIONAL FIRECRAWL
-        # -------------------------------------------------
-
-        firecrawl_md = (
-            try_firecrawl(
-                full_url
-            )
-        )
-
-        if (
-            firecrawl_md
-            and len(firecrawl_md)
-            > len(markdown_content)
-        ):
-
-            markdown_content = (
-                firecrawl_md
-            )
 
         # -------------------------------------------------
         # BUILD FINAL MARKDOWN
